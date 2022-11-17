@@ -278,20 +278,26 @@ public class GenericDatabaseDialect implements DatabaseDialect {
     // issue a test query ...
     String query = checkConnectionQuery();
     if (query != null) {
+      glog.info("Issuing a query: to check connection to Database", query);
       try (Statement statement = connection.createStatement()) {
         if (statement.execute(query)) {
           ResultSet rs = null;
           try {
             // do nothing with the result set
             rs = statement.getResultSet();
+          } catch(Exception e) {
+            glog.error("Got exception when getting the result set", e);
+            throw e;
           } finally {
             if (rs != null) {
+              glog.info("Closing the result set");
               rs.close();
             }
           }
         }
       }
     }
+    glog.info("Connection is valid");
     return true;
   }
 
